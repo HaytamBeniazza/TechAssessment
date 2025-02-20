@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class UserDataGenerator {
 
     private static final Faker faker = new Faker();
-    private static final PasswordEncoder passwordEncoder = new PasswordEncoder();
+    private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public static List<User> generateUsers(int count) {
         List<User> users = new ArrayList<>();

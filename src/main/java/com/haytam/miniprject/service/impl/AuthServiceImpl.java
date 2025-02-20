@@ -3,6 +3,7 @@ package com.haytam.miniprject.service.impl;
 import com.haytam.miniprject.dto.request.AuthRequest;
 import com.haytam.miniprject.dto.response.AuthResponse;
 import com.haytam.miniprject.entity.User;
+import com.haytam.miniprject.exception.UserNotFoundException;
 import com.haytam.miniprject.repository.UserRepository;
 import com.haytam.miniprject.security.jwt.JwtUtil;
 import com.haytam.miniprject.service.AuthService;
@@ -30,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
         User user = userRepository.findByEmailOrUsername(request.getUsername(), request.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + request.getUsername()));
 
         String accessToken = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(accessToken);
