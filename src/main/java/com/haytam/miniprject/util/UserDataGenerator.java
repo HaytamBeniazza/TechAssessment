@@ -2,6 +2,7 @@ package com.haytam.miniprject.util;
 
 import com.github.javafaker.Faker;
 import com.haytam.miniprject.entity.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class UserDataGenerator {
 
     private static final Faker faker = new Faker();
+    private static final PasswordEncoder passwordEncoder = new PasswordEncoder();
 
     public static List<User> generateUsers(int count) {
         List<User> users = new ArrayList<>();
@@ -28,7 +30,10 @@ public class UserDataGenerator {
             user.setMobile(faker.phoneNumber().cellPhone());
             user.setUsername(faker.name().username());
             user.setEmail(faker.internet().emailAddress());
-            user.setPassword(faker.internet().password(6, 10));
+
+            String rawPassword = "password123";
+            user.setPassword(passwordEncoder.encode(rawPassword));
+
             user.setRole(faker.bool().bool() ? "admin" : "user");
             users.add(user);
         }

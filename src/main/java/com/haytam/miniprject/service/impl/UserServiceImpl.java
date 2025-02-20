@@ -7,9 +7,10 @@ import com.haytam.miniprject.dto.response.UserResponse;
 import com.haytam.miniprject.entity.User;
 import com.haytam.miniprject.repository.UserRepository;
 import com.haytam.miniprject.service.UserService;
-import com.haytam.miniprject.util.PasswordEncoder;
 import com.haytam.miniprject.util.UserDataGenerator;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,21 +19,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
 
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, ObjectMapper objectMapper) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.objectMapper = objectMapper;
+    }
+
+
     @Override
     public List<UserResponse> generateUsers(UserGenerateRequest request) {
         List<User> users = UserDataGenerator.generateUsers(request.getCount());
+        userRepository.saveAll(users);
         return users.stream()
                 .map(this::mapToUserResponse)
                 .collect(Collectors.toList());
     }
-
     @Override
     public BatchUploadResult uploadUsers(MultipartFile file) {
         try {
@@ -68,6 +75,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse getUserProfile(String username) {
+        System.out.println("here" + username);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return mapToUserResponse(user);
